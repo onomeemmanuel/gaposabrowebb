@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gaposa Bro — Services & CGPA Calculator</title>
+<style>
+  :root{--accent:#2b2b2b; --card: #fff; --muted:#666;}
+  *{box-sizing:border-box}
+  body{
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    margin:0;background:linear-gradient(135deg,#ffd9e8,#d7f7ff);
+    padding:20px;color:var(--accent);
+  }
+  .wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:20px;}
+  header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+  .logo{width:72px;height:72px;border-radius:14px;background:linear-gradient(135deg,#fff,#fff6);display:flex;align-items:center;justify-content:center;font-weight:900}
+  h1{margin:0;font-size:22px}
+  .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 30px rgba(10,10,10,0.06)}
+  .services-list{display:flex;flex-direction:column;gap:12px}
+  .service{padding:12px;border-radius:10px;border:1px solid #f0f0f0;background:linear-gradient(180deg,#fff,#fbfbfb)}
+  .service h3{margin:0 0 6px}
+  .service p{margin:0 0 10px;color:var(--muted)}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{padding:8px 12px;border-radius:8px;border:0;background:linear-gradient(90deg,#6b9cff,#7ef2d6);color:#fff;font-weight:700;cursor:pointer}
+  .btn-ghost{background:transparent;border:1px solid #ddd;color:var(--accent)}
+  .small{font-size:13px;color:var(--muted)}
+  /* Calculator */
+  .calc .courses{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
+  .course-row{display:grid;grid-template-columns:1fr 100px 140px 54px;gap:8px;align-items:center}
+  input, select{padding:8px;border-radius:8px;border:1px solid #e1e1e1;font-size:14px}
+  .remove{background:transparent;border:0;color:#d33;cursor:pointer}
+  .actions{display:flex;gap:8px;margin-top:8px}
+  .result{margin-top:12px;padding:12px;border-radius:10px;background:#f6fffb;border:1px solid #e6f7ef}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{padding:8px;border:1px solid #f1f1f1;text-align:center}
+  .quote{margin-top:14px;padding:12px;border-radius:8px;background:#fff3e0;font-style:italic;text-align:center}
+  footer{margin-top:16px;text-align:center;color:var(--muted)}
+  @media (max-width:980px){.wrap{grid-template-columns:1fr} .course-row{grid-template-columns:1fr 90px 130px 48px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">GAP</div>
+  <div>
+    <h1>Gaposa Bro</h1>
+    <div class="small">Matchmaking • Crypto Trading • Laundry — contact directly on WhatsApp</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- Left: Services + Calculator -->
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <!-- SERVICES -->
+    <div class="card">
+      <h2 style="margin-top:0">Our Services</h2>
+
+      <div class="services-list">
+
+        <!-- Matchmaking -->
+        <div class="service">
+          <h3>Matching</h3>
+          <p>Find a perfect campus partner with our professional matchmaking service.</p>
+          <div class="small">Privacy protected • Guided introductions</div>
+          <div style="height:8px"></div>
+          <div class="btn-row">
+            <button class="btn" onclick="wa('match_personal')">Personalized Matching</button>
+            <button class="btn" onclick="wa('match_guided')">Guided Introductions</button>
+            <button class="btn-ghost" onclick="wa('match_privacy')">Privacy Protected</button>
+          </div>
+        </div>
+
+        <!-- Crypto -->
+        <div class="service">
+          <h3>Crypto Trading</h3>
+          <p>Learn cryptocurrency trading & blockchain technology.</p>
+          <div class="btn-row">
+            <button class="btn" onclick="wa('crypto_training')">Complete Training</button>
+            <button class="btn" onclick="wa('crypto_strat')">Trading Strategies</button>
+            <button class="btn" onclick="wa('crypto_profit')">Profit Guidance</button>
+          </div>
+        </div>
+
+        <!-- Laundry -->
+        <div class="service">
+          <h3>Laundry Services</h3>
+          <p>Professional laundry & dry cleaning services — quality care for your clothing, with pickup available.</p>
+          <div class="btn-row">
+            <button class="btn" onclick="wa('laundry_pickup')">Pickup / Delivery</button>
+            <button class="btn" onclick="wa('laundry_premium')">Premium Care</button>
+            <button class="btn" onclick="wa('laundry_quick')">Quick Turnaround</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:12px" class="small">Phone/WhatsApp: <strong id="wa-number">+2349132904751</strong> · Developer: <a href="mailto:Ononee945@gmail.com">Ononee945@gmail.com</a></div>
+    </div>
+
+    <!-- CGPA Calculator (compact below services on left) -->
+    <div class="card calc">
+      <h2 style="margin-top:0">CGPA Calculator (A=5 → F=0)</h2>
+      <p class="small">Add courses, pick grade (A–F), enter credit units. CGPA is computed on a 5.0 scale.</p>
+
+      <div class="courses" id="coursesContainer">
+        <!-- dynamic rows injected here -->
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" id="addCourseBtn">+ Add Course</button>
+        <button class="btn-ghost" id="clearCoursesBtn">Clear All</button>
+        <div style="flex:1"></div>
+        <button class="btn" id="calcBtn">Calculate CGPA</button>
+      </div>
+
+      <div id="resultArea" class="result" style="display:none"></div>
+
+      <div style="margin-top:12px">
+        <h4 style="margin:8px 0 6px">How CGPA is calculated</h4>
+        <p class="small"><strong>CGPA = Total Grade Points (TGP) ÷ Total Credit Units (TCU)</strong></p>
+      </div>
+
+      <div style="margin-top:10px">
+        <h4 style="margin:6px 0">Grading (letter → points → score range)</h4>
+        <table>
+          <thead><tr><th>Grade</th><th>Points</th><th>Score Range</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td>5</td><td>70–100</td></tr>
+            <tr><td>B</td><td>4</td><td>60–69</td></tr>
+            <tr><td>C</td><td>3</td><td>50–59</td></tr>
+            <tr><td>D</td><td>2</td><td>45–49</td></tr>
+            <tr><td>E</td><td>1</td><td>40–44</td></tr>
+            <tr><td>F</td><td>0</td><td>0–39</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Right: Classification, formula, quote -->
+  <aside>
+    <div class="card">
+      <h3 style="margin-top:0">Classification (converted to 5.0 scale)</h3>
+      <p class="small">Your requested classification (3.50–4.00 etc) has been converted proportionally to the 5.0 scale (×1.25). Rounded to 2 decimals below.</p>
+      <table>
+        <thead><tr><th>Range (5.0)</th><th>Classification</th></tr></thead>
+        <tbody>
+          <tr><td>4.38 – 5.00</td><td>Distinction</td></tr>
+          <tr><td>3.75 – 4.37</td><td>Upper Credit</td></tr>
+          <tr><td>3.13 – 3.74</td><td>Lower Credit</td></tr>
+          <tr><td>2.50 – 3.12</td><td>Pass</td></tr>
+          <tr><td>0.00 – 2.49</td><td>Fail</td></tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:12px">
+        <h4 style="margin:6px 0">Formula</h4>
+        <p class="small"><strong>CGPA = TGP ÷ TCU</strong> where TGP = Σ(unit × grade point)</p>
+      </div>
+
+      <div class="quote">
+        "Success is not final, failure is not fatal: it is the courage to continue that counts. Keep grinding!"
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn" onclick="wa('recommend')">Request Recommendation</button>
+        <a class="btn-ghost" href="mailto:Ononee945@gmail.com">Contact Developer</a>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<footer>
+  <div class="small">© Gaposa Bro — ready for Vercel. Change WA number in the code if needed.</div>
+</footer>
+
+<script>
+  // PHONE CONFIG
+  const PHONE = "2349132904751"; // WhatsApp (no +)
+  document.getElementById('wa-number').textContent = "+" + PHONE;
+
+  // Prefilled messages for each button
+  const MESSAGES = {
+    // Matchmaking
+    match_personal: "Hello Gaposa Bro, I'm interested in your personalized matching to find a campus partner. Please tell me how it works and the pricing.",
+    match_guided: "Hello Gaposa Bro, I'm interested in your guided introductions service. Please explain how it works and pricing.",
+    match_privacy: "Hello Gaposa Bro, I have questions about your privacy-protected matchmaking. Please tell me more.",
+
+    // Crypto
+    crypto_training: "Hello Gaposa Bro, I'm interested in the complete crypto training. Please send details and pricing.",
+    crypto_strat: "Hello Gaposa Bro, I'm interested in trading strategies. Please tell me more and the price.",
+    crypto_profit: "Hello Gaposa Bro, I need profit guidance for crypto trading. How can you help?",
+
+    // Laundry
+    laundry_pickup: "Hello Gaposa Bro, I want pickup/delivery for laundry. What's the process and cost?",
+    laundry_premium: "Hello Gaposa Bro, I want premium care for my clothing. Tell me about the service and pricing.",
+    laundry_quick: "Hello Gaposa Bro, I need quick turnaround laundry service. How fast and how much?",
+
+    // Recommendation
+    recommend: "Which of your services best suit my need? I would appreciate your guidance in helping me choose the right option for my items. Looking forward to your recommendations."
+  };
+
+  function wa(key){
+    const msg = MESSAGES[key] || "Hello Gaposa Bro";
+    const url = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(msg);
+    window.open(url, "_blank");
+  }
+
+  // ---------- CGPA Calculator logic (A=5 .. F=0) ----------
+  const coursesContainer = document.getElementById('coursesContainer');
+  const addCourseBtn = document.getElementById('addCourseBtn');
+  const clearBtn = document.getElementById('clearCoursesBtn');
+  const calcBtn = document.getElementById('calcBtn');
+  const resultArea = document.getElementById('resultArea');
+
+  function createCourseRow(title='', units='', gradeValue='5'){
+    const row = document.createElement('div');
+    row.className = 'course-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Course title" value="${escapeHtml(title)}" />
+      <input type="number" placeholder="Credit units" min="0" value="${escapeHtml(units)}" />
+      <select>
+        <option value="5">A (70-100) — 5</option>
+        <option value="4">B (60-69) — 4</option>
+        <option value="3">C (50-59) — 3</option>
+        <option value="2">D (45-49) — 2</option>
+        <option value="1">E (40-44) — 1</option>
+        <option value="0">F (0-39) — 0</option>
+      </select>
+      <button class="remove" title="Remove">×</button>
+    `;
+    // set selected grade
+    row.querySelector('select').value = String(gradeValue);
+
+    // remove handler
+    row.querySelector('.remove').addEventListener('click', ()=> row.remove());
+    coursesContainer.appendChild(row);
+    return row;
+  }
+
+  function escapeHtml(s){ return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // Add some default rows
+  createCourseRow('Course 1','3','5');
+  createCourseRow('Course 2','3','4');
+
+  addCourseBtn.addEventListener('click', ()=> createCourseRow());
+  clearBtn.addEventListener('click', ()=> { coursesContainer.innerHTML=''; });
+
+  // Classification boundaries on 5.0 scale (converted from 4.0 * 1.25)
+  const CLASS_THRESHOLDS = {
+    distinction: 3.50 * 1.25, // 4.375
+    upper: 3.00 * 1.25,       // 3.75
+    lower: 2.50 * 1.25,       // 3.125
+    pass:  2.00 * 1.25        // 2.50
+  };
+
+  calcBtn.addEventListener('click', ()=>{
+    const rows = Array.from(coursesContainer.querySelectorAll('.course-row'));
+    let totalUnits = 0;
+    let totalGP = 0;
+    const details = [];
+
+    for (const r of rows){
+      const title = r.children[0].value.trim() || '—';
+      const units = parseFloat(r.children[1].value);
+      const gp = parseFloat(r.children[2].value);
+
+      if (isNaN(units) || units <= 0) continue;
+      if (isNaN(gp)) continue;
+
+      totalUnits += units;
+      totalGP += units * gp;
+      details.push({title, units, gp});
+    }
+
+    if (totalUnits === 0){
+      alert("Please add at least one course with credit units > 0.");
+      return;
+    }
+
+    const cgpa = totalGP / totalUnits;
+    const cgpaRounded = Number(cgpa.toFixed(2));
+
+    // classification logic (5.0 converted thresholds)
+    let classification = "Fail";
+    if (cgpa >= CLASS_THRESHOLDS.distinction) classification = "Distinction";
+    else if (cgpa >= CLASS_THRESHOLDS.upper) classification = "Upper Credit";
+    else if (cgpa >= CLASS_THRESHOLDS.lower) classification = "Lower Credit";
+    else if (cgpa >= CLASS_THRESHOLDS.pass) classification = "Pass";
+
+    // message for result
+    let honorMessage = "";
+    if (classification === "Distinction") honorMessage = "Outstanding! You are a true champion";
+    else if (classification === "Upper Credit") honorMessage = "Great work — Upper Credit!";
+    else if (classification === "Lower Credit") honorMessage = "Good — Lower Credit!";
+    else if (classification === "Pass") honorMessage = "Pass — Keep improving!";
+    else honorMessage = "Don't give up — keep trying!";
+
+    // build result HTML
+    let html = `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                  <div>
+                    <div style="font-size:34px;font-weight:800">${cgpaRounded} / 5.00</div>
+                    <div style="margin-top:6px"><strong>Classification:</strong> ${classification}</div>
+                    <div style="margin-top:8px;color:#333a"><em>${honorMessage}</em></div>
+                  </div>
+                  <div style="text-align:right" class="small">
+                    <div><strong>TGP:</strong> ${numberWithCommas(totalGP.toFixed(2))}</div>
+                    <div><strong>TCU:</strong> ${numberWithCommas(totalUnits.toFixed(2))}</div>
+                  </div>
+                </div>`;
+
+    // breakdown table
+    html += `<div style="margin-top:12px"><strong>Course Breakdown</strong>
+      <table style="width:100%;margin-top:8px"><thead><tr><th>Course</th><th>Units</th><th>Grade Pt</th><th>Points (units×gp)</th></tr></thead><tbody>`;
+    for (const d of details){
+      html += <tr><td style="text-align:left;padding-left:8px">${escapeHtml(d.title)}</td><td>${d.units}</td><td>${d.gp}</td><td>${(d.units * d.gp).toFixed(2)}</td></tr>;
+    }
+    html += </tbody></table></div>;
+
+    // actions: recommendation & contact
+    html += `<div style="margin-top:12px;display:flex;gap:8px"><button class="btn" onclick="wa('recommend')">Which service suits me?</button>
+             <button class="btn-ghost" onclick="wa_cgpa(${cgpaRounded})">Contact via WhatsApp</button></div>`;
+
+    resultArea.style.display = 'block';
+    resultArea.innerHTML = html;
+
+    // scroll result into view
+    resultArea.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  function numberWithCommas(x){ return String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+  // contact with cgpa included
+  function wa_cgpa(cgpa){
+    const msg = Hello Gaposa Bro, I need assistance with your services. My CGPA is ${cgpa}. Please advise.;
+    const url = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(msg);
+    window.open(url, "_blank");
+  }
+
+  // ---------- end ----------
+</script>
+</body>
+</html>
